@@ -1,0 +1,4 @@
+[build]
+  base = "drakon-homepage"
+  publish = "drakon-homepage"
+  functions = "drakon-homepage/netlify/functions"

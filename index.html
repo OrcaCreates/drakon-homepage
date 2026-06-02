@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drakon — Your AI dragon crew</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Sticky top navigation -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <!-- Logo -->
+      <a href="#top" class="logo" id="logo">DrakonCrew</a>
+
+      <!-- Dragons dropdown -->
+      <div class="dropdown" id="dragons-dropdown">
+        <button class="dropdown-toggle" id="dragons-toggle" aria-haspopup="true" aria-expanded="false">
+          Dragons <span class="arrow">▾</span>
+        </button>
+        <div class="dropdown-menu" id="dragons-menu">
+          <a href="#" class="dragon-row">
+            <img class="dragon-avatar avatar-vexa" src="images/Vexahead.png" alt="Vexa">
+            <span class="dragon-info">
+              <span class="dragon-name">Vexa</span>
+              <span class="dragon-role">Writes your ads</span>
+            </span>
+          </a>
+          <a href="#" class="dragon-row">
+            <img class="dragon-avatar avatar-terra" src="images/Terrahead.png" alt="Terra">
+            <span class="dragon-info">
+              <span class="dragon-name">Terra</span>
+              <span class="dragon-role">Builds your store</span>
+            </span>
+          </a>
+          <a href="#" class="dragon-row">
+            <img class="dragon-avatar avatar-vael" src="images/Vaelhead.png" alt="Vael">
+            <span class="dragon-info">
+              <span class="dragon-name">Vael</span>
+              <span class="dragon-role">Plans your next move</span>
+            </span>
+          </a>
+          <a href="#" class="dragon-row">
+            <img class="dragon-avatar avatar-lyric" src="images/Lyrichead.png" alt="Lyric">
+            <span class="dragon-info">
+              <span class="dragon-name">Lyric</span>
+              <span class="dragon-role">Handles your customers</span>
+            </span>
+          </a>
+          <a href="#" class="dragon-row">
+            <img class="dragon-avatar avatar-cryo" src="images/Cryohead.png" alt="Cryo">
+            <span class="dragon-info">
+              <span class="dragon-name">Cryo</span>
+              <span class="dragon-role">Tracks what's working</span>
+            </span>
+          </a>
+          <a href="#" class="dragon-row">
+            <img class="dragon-avatar avatar-aurora" src="images/Aurorahead.png" alt="Aurora">
+            <span class="dragon-info">
+              <span class="dragon-name">Aurora</span>
+              <span class="dragon-role">Makes your social posts</span>
+            </span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Pricing link -->
+      <a href="#pricing" class="nav-link">Pricing</a>
+
+      <!-- About link -->
+      <a href="#about" class="nav-link">About Drakon</a>
+
+      <!-- Spacer pushes the rest to the right -->
+      <div class="spacer"></div>
+
+      <!-- Login (left of Get Started) -->
+      <a href="#" class="nav-link login" id="login">Login</a>
+
+      <!-- Get Started button -->
+      <a href="#waitlist" class="btn-get-started">Get Started</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" id="top">
+    <div class="hero-content">
+      <h1 class="hero-headline">Starting an online store? Let the dragons help.</h1>
+      <p class="hero-subhead">Six AI dragons built for first-time sellers. Marketing, store setup, content, support — each one handles a different part. So you don't have to do it all alone.</p>
+      <a href="#waitlist" class="btn-get-started btn-hero">Get Started</a>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="how-it-works" id="how-it-works">
+    <h2 class="how-heading">How it works</h2>
+    <p class="how-subhead">Three steps. That's it.</p>
+
+    <div class="how-grid">
+      <div class="step">
+        <div class="step-circle step-1">1</div>
+        <h3 class="step-title">Pick your dragon</h3>
+        <p class="step-desc">Choose which dragon you need today — ads, store setup, content, customer service, analytics, or strategy.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-circle step-2">2</div>
+        <h3 class="step-title">Tell them what you need</h3>
+        <p class="step-desc">Chat naturally like you're texting a friend. No commands, no setup, no complicated forms.</p>
+      </div>
+
+      <div class="step">
+        <div class="step-circle step-3">3</div>
+        <h3 class="step-title">Get results in seconds</h3>
+        <p class="step-desc">The dragons handle the work — copy, posts, replies, plans — ready to use instantly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- The Crew -->
+  <section class="crew" id="dragons">
+    <h2 class="crew-heading">Meet the crew.</h2>
+    <p class="crew-subhead">Six dragons. Each handles a different part of running your store.</p>
+
+    <div class="crew-grid">
+      <article class="dragon-card card-vexa">
+        <img class="card-img" src="images/Vexa.png" alt="Vexa">
+        <h3 class="card-name">Vexa</h3>
+        <p class="card-role">Writes your ads</p>
+        <p class="card-desc">Generates scroll-stopping ad copy for Meta, TikTok, and Google. Headlines, hooks, full ads — done in seconds.</p>
+      </article>
+
+      <article class="dragon-card card-aurora">
+        <img class="card-img" src="images/Aurora.png" alt="Aurora">
+        <h3 class="card-name">Aurora</h3>
+        <p class="card-role">Makes your social posts</p>
+        <p class="card-desc">Daily content for TikTok, Instagram, and X. Captions, hooks, and post ideas tuned to your brand.</p>
+      </article>
+
+      <article class="dragon-card card-terra">
+        <img class="card-img" src="images/Terra.png" alt="Terra">
+        <h3 class="card-name">Terra</h3>
+        <p class="card-role">Builds your store</p>
+        <p class="card-desc">Product descriptions, category copy, and store pages that actually convert. No more blank screens.</p>
+      </article>
+
+      <article class="dragon-card card-lyric">
+        <img class="card-img" src="images/Lyric.png" alt="Lyric">
+        <h3 class="card-name">Lyric</h3>
+        <p class="card-role">Handles your customers</p>
+        <p class="card-desc">Drafts replies to emails, DMs, and support tickets. Friendly, on-brand, never robotic.</p>
+      </article>
+
+      <article class="dragon-card card-cryo">
+        <img class="card-img" src="images/Cryo.png" alt="Cryo">
+        <h3 class="card-name">Cryo</h3>
+        <p class="card-role">Tracks what's working</p>
+        <p class="card-desc">Paste in your sales and ad data. Get clear insights on what to scale and what to cut.</p>
+      </article>
+
+      <article class="dragon-card card-vael">
+        <img class="card-img" src="images/Vael.png" alt="Vael">
+        <h3 class="card-name">Vael</h3>
+        <p class="card-role">Plans your next move</p>
+        <p class="card-desc">Strategy advice tailored to your store. What to launch, when to push, where to focus.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- About Drakon -->
+  <section id="about" class="about">
+    <div class="about-inner">
+      <h2 class="about-heading">Built by a kid with his dad.</h2>
+      <p class="about-intro">Hey, I'm Duncan. I built Drakon.</p>
+      <p class="about-text">I'm a kid running real businesses from my house in Texas — including a vendor access site called CertifiedSells. My dad got me into coding, and we've been building stuff together in our garage ever since.</p>
+      <p class="about-text about-break">Here's why Drakon exists:</p>
+      <p class="about-text">I tried to start an online store more times than I can count. Every time I'd open Shopify, freeze up trying to figure out what to sell, what to post, how to write an ad, how to talk to customers. There were tools out there, but they all felt built for people who already knew what they were doing. Nobody was building for the kid (or the adult) staring at a blank screen trying to figure out where to start.</p>
+      <p class="about-text">So I built it. Six AI dragons. Each one handles a different part of running a store. They're for the version of me from a year ago — and for anyone else trying to start their first online business without losing their mind.</p>
+      <p class="about-text">I'm building this in my garage with my dad. No funding. No team. Just a kid and his dad who got tired of watching people get stuck — and decided to build the tool we wished existed.</p>
+      <p class="about-text">If that sounds like something you'd use, get on the waitlist. The dragons are coming.</p>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing" class="pricing">
+    <h2 class="pricing-heading">Simple pricing. Real results.</h2>
+    <p class="pricing-subhead">Start free. Upgrade when you're ready.</p>
+
+    <div class="pricing-grid">
+      <!-- Plan 1 — Hatchling -->
+      <div class="plan">
+        <h3 class="plan-name">Hatchling</h3>
+        <p class="plan-price"><span class="plan-amount">$0</span><span class="plan-period">/month</span></p>
+        <p class="plan-tagline">Try Drakon, no card needed</p>
+        <ul class="plan-features">
+          <li><span class="check">✓</span>10 messages per month</li>
+          <li><span class="check">✓</span>1 dragon of your choice</li>
+          <li><span class="check">✓</span>Email support</li>
+          <li><span class="check">✓</span>Forever free</li>
+        </ul>
+      </div>
+
+      <!-- Plan 2 — Crew (Most Popular) -->
+      <div class="plan plan-featured">
+        <span class="plan-badge">Most Popular</span>
+        <h3 class="plan-name">Crew</h3>
+        <p class="plan-price"><span class="plan-amount">$29</span><span class="plan-period">/month</span></p>
+        <p class="plan-tagline">For real sellers ready to grow</p>
+        <ul class="plan-features">
+          <li><span class="check">✓</span>200 messages per month</li>
+          <li><span class="check">✓</span>All 6 dragons</li>
+          <li><span class="check">✓</span>Chat history saved</li>
+          <li><span class="check">✓</span>Email support</li>
+          <li><span class="check">✓</span>Cancel anytime</li>
+        </ul>
+      </div>
+
+      <!-- Plan 3 — Legend -->
+      <div class="plan">
+        <h3 class="plan-name">Legend</h3>
+        <p class="plan-price"><span class="plan-amount">$79</span><span class="plan-period">/month</span></p>
+        <p class="plan-tagline">For serious operators who need power</p>
+        <ul class="plan-features">
+          <li><span class="check">✓</span>800 messages per month</li>
+          <li><span class="check">✓</span>All 6 dragons</li>
+          <li><span class="check">✓</span>Priority response speed</li>
+          <li><span class="check">✓</span>Chat history saved</li>
+          <li><span class="check">✓</span>Early access to new dragons</li>
+          <li><span class="check">✓</span>Cancel anytime</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="pricing-fineprint">Need more messages? Overage charges apply at $0.10/message past your monthly limit. Capped at $20/month for Crew and $30/month for Legend.</p>
+
+    <a href="#waitlist" class="btn-get-started btn-pricing">Join Waitlist</a>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="faq">
+    <h2 class="faq-heading">Questions people are asking.</h2>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          <span>When will Drakon launch?</span>
+          <span class="faq-chevron">▾</span>
+        </button>
+        <div class="faq-answer">
+          <p>Drakon is in active development. Waitlist members get free early access when the dragons are ready. We'll email you the moment it's live — no countdowns, no false promises.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          <span>Is the waitlist free?</span>
+          <span class="faq-chevron">▾</span>
+        </button>
+        <div class="faq-answer">
+          <p>Yes. 100% free, no credit card required. You give us your email, we give you a heads up when Drakon opens. That's the whole deal.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          <span>How much does it cost?</span>
+          <span class="faq-chevron">▾</span>
+        </button>
+        <div class="faq-answer">
+          <p>Pricing is shown above — Free, $29/month, or $79/month depending on usage. Waitlist members will get exclusive early bird pricing when we launch.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          <span>What if I've never sold anything online?</span>
+          <span class="faq-chevron">▾</span>
+        </button>
+        <div class="faq-answer">
+          <p>Then you're exactly who Drakon is built for. The dragons help you go from zero to your first sale — not just optimize what's already working. Every dragon is designed to explain things clearly to first-timers.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" type="button">
+          <span>Do I need any technical skills?</span>
+          <span class="faq-chevron">▾</span>
+        </button>
+        <div class="faq-answer">
+          <p>No. If you can send a text message, you can use Drakon. You chat with the dragons in plain English — no commands, no settings, no setup wizards.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Waitlist -->
+  <section id="waitlist" class="waitlist">
+    <div class="waitlist-inner">
+      <h2 class="waitlist-heading">Be first when the dragons launch.</h2>
+      <p class="waitlist-subhead">Join the waitlist for free early access. No payment, no spam — just an email when Drakon opens.</p>
+
+      <form class="waitlist-form" id="waitlist-form">
+        <input class="waitlist-input" type="text" name="name" placeholder="Your name" required>
+        <input class="waitlist-input" type="email" name="email" placeholder="Your email" required>
+        <button class="btn-get-started btn-waitlist" type="submit">Join Waitlist</button>
+      </form>
+
+      <p class="waitlist-note" id="waitlist-note">No spam. No payment. Just dragons.</p>
+
+      <!-- Shown after submit (replaces the form). -->
+      <div class="waitlist-confirm" id="waitlist-confirm" hidden>
+        <div class="confirm-check">✓</div>
+        <p class="confirm-title">Already signed up</p>
+        <p class="confirm-sub">We'll be in touch soon.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Waitlist success modal -->
+  <div class="modal-overlay" id="waitlist-modal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
+      <button class="modal-close" id="modal-close" aria-label="Close">×</button>
+      <h3 class="modal-heading" id="modal-heading">You're in.</h3>
+      <p class="modal-text">We'll email you when the dragons are ready. 🐉</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-logo">DrakonCrew</div>
+    <p class="footer-tagline">AI dragons for first-time ecommerce sellers.</p>
+    <nav class="footer-links">
+      <a href="#">Contact</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+    </nav>
+    <p class="footer-copyright">© 2026 Drakon. Built with care in Texas.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

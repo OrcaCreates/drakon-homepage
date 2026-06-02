@@ -1,0 +1,1147 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap');
+
+/* ---------- Base ---------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #1A1033;
+  color: #FFFFFF;
+  font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+  /* Offset for the fixed 70px nav so content isn't hidden behind it */
+  padding-top: 70px;
+}
+
+/* Keep browser autofill on the dark theme (override the white box/dark text). */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.05) inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: #ffffff;
+}
+
+/* ---------- Hero ---------- */
+/* Desktop: cap the hero to the viewport minus the 70px nav so the whole
+   hero is visible on first load without scrolling. background-size: contain
+   keeps the full image visible (no crop); the dark background-color fills
+   any letterbox bands so they blend with the surrounding page. */
+.hero {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 70px);
+  max-height: calc(100vh - 70px);
+  background-image: url('images/HomepageBG.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* Pure black frame around the contained image (sides/top-bottom bands).
+     Only the hero uses black; the rest of the page stays #1A1033. */
+  background-color: #000000;
+  overflow: hidden;
+}
+
+/* Subtle gradient on the LEFT only, fading to transparent by center,
+   so the text reads without darkening the dragon on the right. */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.4) 0%,
+    rgba(0, 0, 0, 0) 50%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Text overlay positioned over the image, anchored bottom-left.
+   Percentage-based bottom so it scales with the image at any width. */
+.hero-content {
+  position: absolute;
+  /* Start ~11% in so the text lands on the image's dark left area,
+     not in the black band. Percentage-based so it scales with the image. */
+  left: 11%;
+  bottom: 15%;
+  z-index: 2; /* above the gradient */
+}
+
+.hero-headline {
+  max-width: 600px;
+  /* Scales with viewport so it never overflows the dark area on short laptops. */
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  color: #FFFFFF;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+}
+
+.hero-subhead {
+  max-width: 500px;
+  margin-top: 20px;
+  font-size: 19px;
+  line-height: 1.5;
+  color: #C9B8E8;
+}
+
+.btn-hero {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 16px 36px;
+  font-size: 17px;
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  z-index: 1000;
+  background-color: rgba(10, 6, 24, 0.85);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(155, 111, 255, 0.15);
+}
+
+.nav-inner {
+  max-width: 1200px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 70px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+/* Logo */
+.logo {
+  font-size: 24px;
+  font-weight: 800;
+  color: #FFFFFF;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Generic nav links */
+.nav-link {
+  font-size: 16px;
+  color: #FFFFFF;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  color: #C9B8E8;
+}
+
+.login {
+  opacity: 0.8;
+  font-weight: 400;
+}
+
+/* Spacer pushes Login + Get Started to the far right */
+.spacer {
+  flex: 1;
+}
+
+/* ---------- Dragons dropdown ---------- */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 16px;
+  color: #FFFFFF;
+  background: none;
+  border: none;
+  cursor: pointer;
+  /* Invisible padding extends the hover area down into the gap so the
+     mouse never leaves the hover zone on the way to the dropdown.
+     Matching top padding keeps the label vertically centered in the nav. */
+  padding: 20px 0;
+}
+
+.dropdown-toggle .arrow {
+  font-size: 12px;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-menu {
+  position: absolute;
+  /* Flush against the bottom of the (padded) trigger — no visible gap,
+     and the trigger's padding-bottom keeps the hover path continuous. */
+  top: 100%;
+  left: 0;
+  min-width: 280px;
+  background-color: #1A1033;
+  border: 1px solid rgba(155, 111, 255, 0.25);
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  /* Hidden by default; toggled via opacity/visibility so it can fade. */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* Shown state (JS toggles .open for tap; hover handles desktop below) */
+.dropdown.open .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+}
+
+.dropdown.open .dropdown-toggle .arrow {
+  transform: rotate(180deg);
+}
+
+/* Desktop: open on hover only where hover is supported.
+   The whole .dropdown wrapper (trigger + panel) controls the hover state. */
+@media (hover: hover) {
+  .dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+  }
+  .dropdown:hover .dropdown-toggle .arrow {
+    transform: rotate(180deg);
+  }
+}
+
+/* Dragon rows */
+.dragon-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.dragon-row:hover {
+  background-color: rgba(155, 111, 255, 0.12);
+}
+
+.dragon-avatar {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  /* Pre-cropped headshots: already framed, so just center and fill. */
+  object-fit: cover;
+  object-position: center center;
+  background-color: #0F0815; /* dark fallback while the image loads */
+  border: 1.5px solid;       /* per-dragon color set below */
+}
+
+/* Per-dragon portrait border + subtle glow, matching the cards section. */
+.avatar-vexa   { border-color: rgba(255, 77, 46, 0.4);  box-shadow: 0 0 8px rgba(255, 77, 46, 0.3); }
+.avatar-aurora { border-color: rgba(233, 30, 99, 0.4);  box-shadow: 0 0 8px rgba(233, 30, 99, 0.3); }
+.avatar-terra  { border-color: rgba(124, 179, 66, 0.4); box-shadow: 0 0 8px rgba(124, 179, 66, 0.3); }
+.avatar-lyric  { border-color: rgba(38, 198, 218, 0.4); box-shadow: 0 0 8px rgba(38, 198, 218, 0.3); }
+.avatar-cryo   { border-color: rgba(144, 202, 249, 0.4); box-shadow: 0 0 8px rgba(144, 202, 249, 0.3); }
+.avatar-vael   { border-color: rgba(126, 87, 194, 0.4); box-shadow: 0 0 8px rgba(126, 87, 194, 0.3); }
+
+.dragon-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.dragon-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: #FFFFFF;
+}
+
+.dragon-role {
+  font-size: 13px;
+  color: #C9B8E8;
+}
+
+/* ---------- Get Started button ---------- */
+.btn-get-started {
+  font-size: 16px;
+  font-weight: 700;
+  color: #FFFFFF;
+  text-decoration: none;
+  background-color: #4A9EFF;
+  padding: 12px 28px;
+  border-radius: 999px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-get-started:hover {
+  background-color: #3A82D6;
+}
+
+/* ========================================================================
+   HOW IT WORKS — three numbered steps (between hero and the crew)
+   ======================================================================== */
+.how-it-works {
+  background-color: #000000; /* matches the dragons section below */
+  padding: 100px 60px;
+}
+
+.how-heading {
+  text-align: center;
+  font-size: 48px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.how-subhead {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 18px;
+  color: #C9B8E8;
+}
+
+/* 3 columns on desktop; stacks to 1 column on mobile (see media query). */
+.how-grid {
+  max-width: 1200px;
+  margin: 60px auto 0; /* 60px space below the subhead */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+.step {
+  position: relative; /* anchor for the connecting line */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.step-circle {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 30px;
+}
+
+/* Per-step circle color + subtle outer glow. */
+.step-1 { background-color: #FF4D2E; box-shadow: 0 0 25px rgba(255, 77, 46, 0.4); }
+.step-2 { background-color: #26C6DA; box-shadow: 0 0 25px rgba(38, 198, 218, 0.4); }
+.step-3 { background-color: #E91E63; box-shadow: 0 0 25px rgba(233, 30, 99, 0.4); }
+
+.step-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 12px;
+}
+
+.step-desc {
+  max-width: 280px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.7); /* muted white */
+}
+
+/* Connecting dashed line between steps (desktop only). Sits at the circle's
+   vertical center and spans the gap from this circle's edge to the next. */
+.step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 35px; /* circle center (70px / 2) */
+  left: calc(50% + 35px);   /* start at this circle's right edge */
+  width: calc(100% - 30px); /* reach the next circle's left edge */
+  border-top: 2px dashed rgba(201, 184, 232, 0.3);
+}
+
+/* ========================================================================
+   THE CREW — six dragon cards in a 3x2 grid (below the hero)
+   ======================================================================== */
+.crew {
+  background-color: #000000; /* continues the cinematic black theme */
+  padding: 100px 60px;
+}
+
+.crew-heading {
+  text-align: center;
+  font-size: 48px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.crew-subhead {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 18px;
+  color: #C9B8E8;
+}
+
+/* 3 columns on desktop; tablet/mobile overrides live in the media queries. */
+.crew-grid {
+  max-width: 1200px;
+  margin: 60px auto 0; /* 60px space below the subhead */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+
+/* Card shell — per-dragon border/glow colors are applied below. */
+.dragon-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background-color: #0F0815; /* off-black with a hint of dark purple */
+  border-radius: 16px;
+  padding: 30px;
+  border: 2px solid;
+  transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+}
+
+.dragon-card:hover {
+  transform: translateY(-6px);
+  /* box-sizing: border-box keeps the outer size fixed, so 3px doesn't shift. */
+  border-width: 3px;
+}
+
+.card-img {
+  display: block;
+  /* Images are 3:2 landscape, so WIDTH is the binding constraint, not height.
+     Filling the card width gives the largest no-crop size the layout allows. */
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto 20px;
+}
+
+.card-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 8px;
+}
+
+.card-role {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.85); /* slightly muted white */
+}
+
+.card-desc {
+  margin-top: 10px;
+  padding: 0 10px;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.7); /* muted white */
+}
+
+/* Per-dragon colored border + glow.
+   Default: subtle single glow, border at reduced alpha.
+   Hover: dramatic two-layer glow (60px tight + 90px wide halo) and the
+   border snaps to full saturation — the dragon's energy radiating outward. */
+.card-vexa   { border-color: rgba(255, 77, 46, 0.6);  box-shadow: 0 0 30px rgba(255, 77, 46, 0.35); }
+.card-vexa:hover   { border-color: #FF4D2E; box-shadow: 0 0 60px rgba(255, 77, 46, 0.75), 0 0 90px rgba(255, 77, 46, 0.4); }
+
+.card-aurora { border-color: rgba(233, 30, 99, 0.6);  box-shadow: 0 0 30px rgba(233, 30, 99, 0.35); }
+.card-aurora:hover { border-color: #E91E63; box-shadow: 0 0 60px rgba(233, 30, 99, 0.75), 0 0 90px rgba(233, 30, 99, 0.4); }
+
+.card-terra  { border-color: rgba(124, 179, 66, 0.6); box-shadow: 0 0 30px rgba(124, 179, 66, 0.35); }
+.card-terra:hover  { border-color: #7CB342; box-shadow: 0 0 60px rgba(124, 179, 66, 0.75), 0 0 90px rgba(124, 179, 66, 0.4); }
+
+.card-lyric  { border-color: rgba(38, 198, 218, 0.6); box-shadow: 0 0 30px rgba(38, 198, 218, 0.35); }
+.card-lyric:hover  { border-color: #26C6DA; box-shadow: 0 0 60px rgba(38, 198, 218, 0.75), 0 0 90px rgba(38, 198, 218, 0.4); }
+
+.card-cryo   { border-color: rgba(144, 202, 249, 0.6); box-shadow: 0 0 30px rgba(144, 202, 249, 0.35); }
+.card-cryo:hover   { border-color: #90CAF9; box-shadow: 0 0 60px rgba(144, 202, 249, 0.75), 0 0 90px rgba(144, 202, 249, 0.4); }
+
+.card-vael   { border-color: rgba(126, 87, 194, 0.6); box-shadow: 0 0 30px rgba(126, 87, 194, 0.35); }
+.card-vael:hover   { border-color: #7E57C2; box-shadow: 0 0 60px rgba(126, 87, 194, 0.75), 0 0 90px rgba(126, 87, 194, 0.4); }
+
+/* ========================================================================
+   About Drakon Section — Duncan's story (between the crew and pricing)
+   ======================================================================== */
+.about {
+  background-color: #000000;
+  padding: 120px 60px;
+}
+
+.about-inner {
+  position: relative; /* anchor for the decorative accent line */
+  max-width: 750px;
+  margin: 0 auto;
+  padding-left: 40px; /* push text away from the accent line */
+  text-align: left;   /* left-aligned reads more naturally for body copy */
+}
+
+/* Glowing vertical accent line down the left edge of the content. */
+.about-inner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;   /* full height of the content column */
+  left: 0;
+  width: 3px;
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.about-heading {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #FFFFFF;
+  margin-bottom: 50px;
+}
+
+/* Personal intro line — slightly larger/bolder, pure white. */
+.about-intro {
+  font-size: 22px;
+  font-weight: 600;
+  color: #FFFFFF;
+  line-height: 1.5;
+  margin-bottom: 32px;
+}
+
+/* Body paragraphs — comfortably readable, slightly muted white. */
+.about-text {
+  font-size: 18px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 24px;
+}
+
+/* "Here's why Drakon exists:" — acts as a visual section break. */
+.about-break {
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-top: 16px;
+}
+
+/* ========================================================================
+   FAQ Section — accordion of questions (between pricing and waitlist)
+   ======================================================================== */
+.faq {
+  background-color: #000000;
+  padding: 100px 60px;
+}
+
+.faq-heading {
+  text-align: center;
+  font-size: 48px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 60px;
+}
+
+.faq-list {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.faq-item {
+  background-color: #0F0815;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Question header — always visible, clickable. */
+.faq-question {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 32px;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: left;
+  color: #FFFFFF;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.faq-question:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.faq-chevron {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.5);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Rotated chevron when the item is open. */
+.faq-item.open .faq-chevron {
+  transform: rotate(180deg);
+}
+
+/* Answer body — collapsed by default. Padding lives here (not on the <p>)
+   so it can transition smoothly alongside max-height in both directions. */
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 32px; /* horizontal stays constant; top/bottom animate */
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              padding-top 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              padding-bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-item.open .faq-answer {
+  max-height: 500px;
+  padding-bottom: 24px; /* top stays 0 so it tucks under the question */
+}
+
+.faq-answer p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #C9B8E8;
+}
+
+/* ========================================================================
+   Footer — last element on the page
+   ======================================================================== */
+.footer {
+  background-color: #000000;
+  padding: 60px 60px 40px;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-logo {
+  font-size: 24px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 16px;
+}
+
+.footer-tagline {
+  font-size: 14px;
+  color: #C9B8E8;
+  margin-bottom: 32px;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.footer-links a {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: #FFFFFF;
+}
+
+.footer-copyright {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* ========================================================================
+   Waitlist Section — final signup form before the footer
+   ======================================================================== */
+.waitlist {
+  background-color: #000000;
+  padding: 120px 60px;
+}
+
+.waitlist-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.waitlist-heading {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: #FFFFFF;
+  margin-bottom: 20px;
+}
+
+.waitlist-subhead {
+  max-width: 500px;
+  margin: 0 auto 50px;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #C9B8E8;
+}
+
+.waitlist-form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* display:flex above would beat the `hidden` attribute's display:none,
+   leaving the form visible after submit — re-assert none when hidden. */
+.waitlist-form[hidden] {
+  display: none;
+}
+
+.waitlist-input {
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 16px 20px;
+  font-family: inherit;
+  font-size: 16px;
+  color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.waitlist-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.waitlist-input:focus {
+  outline: none;
+  border-color: #4A9EFF;
+  box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.15);
+}
+
+/* Submit button — full-width pill, reuses the blue .btn-get-started base. */
+.btn-waitlist {
+  width: 100%;
+  padding: 16px 40px;
+  font-size: 17px;
+  border: none;
+  cursor: pointer;
+}
+
+.waitlist-note {
+  margin-top: 24px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Post-submit confirmation that replaces the form. */
+.waitlist-confirm {
+  text-align: center;
+}
+
+.confirm-check {
+  font-size: 36px;
+  color: #7CB342;
+}
+
+.confirm-title {
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.confirm-sub {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #C9B8E8;
+}
+
+/* ---------- Waitlist success modal ---------- */
+/* The class sets display:flex, which would otherwise beat the `hidden`
+   attribute's display:none — so re-assert none when hidden. */
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.modal-box {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  padding: 60px 50px;
+  text-align: center;
+  background: #0F0815;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 0 60px rgba(74, 158, 255, 0.2);
+  animation: modal-in 0.3s ease forwards;
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-heading {
+  font-size: 36px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: 16px;
+}
+
+.modal-text {
+  font-size: 17px;
+  line-height: 1.5;
+  color: #C9B8E8;
+}
+
+/* ========================================================================
+   PRICING — three plan cards, middle one highlighted (after the crew)
+   ======================================================================== */
+.pricing {
+  background-color: #000000;
+  padding: 100px 60px;
+}
+
+.pricing-heading {
+  text-align: center;
+  font-size: 48px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.pricing-subhead {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 18px;
+  color: #C9B8E8;
+}
+
+/* 3 columns on desktop; stacks to 1 column under 900px (see media query). */
+.pricing-grid {
+  max-width: 1100px;
+  margin: 60px auto 0; /* 60px space below the subhead */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  align-items: start; /* keep the scaled middle card from stretching siblings */
+}
+
+.plan {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: #0F0815;
+  border-radius: 16px;
+  padding: 40px;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Side cards (Hatchling, Legend): frost-white border + soft white glow. */
+.plan:not(.plan-featured) {
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
+}
+
+/* Featured (Crew) card: blue border + glow. Same size as the others. */
+.plan-featured {
+  border: 2px solid #4A9EFF;
+  box-shadow: 0 0 40px rgba(74, 158, 255, 0.3);
+}
+
+.plan-badge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #4A9EFF;
+  color: #FFFFFF;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.plan-name {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.plan-price {
+  text-align: center;
+  margin-top: 12px;
+}
+
+.plan-amount {
+  font-size: 48px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.plan-period {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.plan-tagline {
+  text-align: center;
+  margin-top: 8px;
+  margin-bottom: 30px;
+  font-size: 14px;
+  color: #C9B8E8;
+}
+
+.plan-features {
+  list-style: none; /* remove default bullets */
+}
+
+.plan-features li {
+  display: flex;
+  align-items: flex-start;
+  font-size: 15px;
+  line-height: 1.8;
+  color: #FFFFFF;
+  margin-bottom: 12px;
+}
+
+.check {
+  color: #7CB342; /* green checkmark */
+  font-weight: 700;
+  margin-right: 10px;
+}
+
+/* Centered Join Waitlist button below the cards. */
+.btn-pricing {
+  display: block;
+  width: fit-content;
+  margin: 50px auto 0;
+  padding: 16px 40px;
+  font-size: 18px;
+}
+
+.pricing-fineprint {
+  max-width: 700px;
+  margin: 40px auto 0;
+  text-align: center;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Pricing: stack to 1 column on mobile; don't scale the featured card. */
+@media (max-width: 900px) {
+  .pricing {
+    padding: 60px 20px;
+  }
+
+  .pricing-heading {
+    font-size: 32px;
+  }
+
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Responsive ---------- */
+/* Tablet: 2 columns */
+@media (max-width: 1024px) {
+  .crew-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Small screens: 1 column + tighter spacing */
+@media (max-width: 640px) {
+  .crew {
+    padding: 60px 20px;
+  }
+
+  .crew-heading {
+    font-size: 32px;
+  }
+
+  .crew-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .card-desc {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Mobile: let the hero take its natural aspect-ratio height (no viewport
+     cap) — mobile users expect to scroll. The box matches the image ratio,
+     so contain fills it edge-to-edge with no letterboxing. */
+  .hero {
+    height: auto;
+    max-height: none;
+    aspect-ratio: 1672 / 941;
+  }
+
+  .nav-inner {
+    padding: 0 20px;
+  }
+
+  .hero-content {
+    left: 5%;
+    bottom: 8%;
+  }
+
+  /* clamp() already scales the headline down here (~2rem floor). */
+
+  .hero-subhead {
+    font-size: 16px;
+  }
+
+  /* How it works: stack steps vertically, hide the connecting lines. */
+  .how-it-works {
+    padding: 60px 20px;
+  }
+
+  .how-heading {
+    font-size: 32px;
+  }
+
+  .how-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .step:not(:last-child)::after {
+    display: none;
+  }
+
+  /* About Drakon: scale down padding and text for mobile readability. */
+  .about {
+    padding: 80px 20px;
+  }
+
+  .about-inner {
+    padding-left: 20px; /* tighter so the line doesn't dominate */
+  }
+
+  .about-inner::before {
+    width: 2px;
+  }
+
+  .about-heading {
+    font-size: 32px;
+  }
+
+  .about-intro {
+    font-size: 18px;
+  }
+
+  .about-text {
+    font-size: 16px;
+  }
+
+  /* Waitlist: scale down padding and text for mobile. */
+  .waitlist {
+    padding: 80px 20px;
+  }
+
+  .waitlist-heading {
+    font-size: 32px;
+  }
+
+  .waitlist-subhead {
+    font-size: 16px;
+  }
+
+  /* Modal: tighter padding and smaller text on mobile. */
+  .modal-box {
+    width: 90%;
+    padding: 40px 30px;
+  }
+
+  .modal-heading {
+    font-size: 28px;
+  }
+
+  .modal-text {
+    font-size: 15px;
+  }
+
+  /* FAQ: scale down on mobile. */
+  .faq {
+    padding: 60px 20px;
+  }
+
+  .faq-heading {
+    font-size: 32px;
+  }
+
+  .faq-question {
+    font-size: 16px;
+  }
+
+  .faq-answer p {
+    font-size: 15px;
+  }
+
+  /* Footer: tighter padding on mobile. */
+  .footer {
+    padding: 40px 20px 30px;
+  }
+}
