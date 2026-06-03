@@ -2,7 +2,7 @@
   "name": "Drakon — Your AI dragon crew",
   "short_name": "Drakon",
   "description": "Six AI dragons that help first-time sellers run an online store.",
-  "start_url": "/app.html",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
