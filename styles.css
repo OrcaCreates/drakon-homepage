@@ -1085,10 +1085,10 @@ input:-webkit-autofill:active {
   }
 }
 
-/* Small screens: 1 column + tighter spacing */
+/* Small screens: 2 columns (3 rows of 2) + tighter cards so they fit. */
 @media (max-width: 640px) {
   .crew {
-    padding: 60px 20px;
+    padding: 60px 16px;
   }
 
   .crew-heading {
@@ -1096,12 +1096,24 @@ input:-webkit-autofill:active {
   }
 
   .crew-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .dragon-card {
+    padding: 16px 12px;
+  }
+
+  .card-name {
+    font-size: 18px;
+  }
+
+  .card-role {
+    font-size: 13px;
   }
 
   .card-desc {
-    font-size: 13px;
+    font-size: 12px;
   }
 }
 
