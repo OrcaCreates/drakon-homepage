@@ -1065,15 +1065,34 @@ input:-webkit-autofill:active {
 /* Pricing: stack to 1 column on mobile; don't scale the featured card. */
 @media (max-width: 900px) {
   .pricing {
-    padding: 60px 20px;
+    padding: 60px 12px;
   }
 
   .pricing-heading {
     font-size: 32px;
   }
 
+  /* Keep all 3 plans side by side on mobile; shrink so they fit. The blue
+     (middle) and frost-white (sides) borders come from the base styles. */
   .pricing-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .plan {
+    padding: 16px 9px;
+    border-radius: 12px;
+  }
+  .plan-name { font-size: 15px; }
+  .plan-amount { font-size: 24px; }
+  .plan-period { font-size: 11px; }
+  .plan-tagline { font-size: 11px; margin-bottom: 14px; }
+  .plan-features li { font-size: 11px; line-height: 1.4; margin-bottom: 8px; }
+  .check { margin-right: 6px; }
+  .plan-badge {
+    font-size: 8px;
+    padding: 4px 7px;
+    letter-spacing: 0.5px;
+    top: -10px;
   }
 }
 
@@ -1168,9 +1187,9 @@ input:-webkit-autofill:active {
     max-width: none;
   }
 
-  /* How it works: stack steps vertically, hide the connecting lines. */
+  /* How it works: keep the 3 steps in a horizontal row, just smaller. */
   .how-it-works {
-    padding: 60px 20px;
+    padding: 60px 14px;
   }
 
   .how-heading {
@@ -1178,12 +1197,30 @@ input:-webkit-autofill:active {
   }
 
   .how-grid {
-    grid-template-columns: 1fr;
-    gap: 30px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .step-circle {
+    width: 48px;
+    height: 48px;
+    font-size: 22px;
+    margin-bottom: 14px;
+  }
+
+  .step-title {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .step-desc {
+    font-size: 11px;
+    line-height: 1.4;
+    max-width: none;
   }
 
   .step:not(:last-child)::after {
-    display: none;
+    display: none; /* connecting line off — circles are smaller now */
   }
 
   /* About Drakon: scale down padding and text for mobile readability. */
