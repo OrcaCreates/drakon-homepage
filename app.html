@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Drakon</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1A1033">
+
+  <!-- iOS PWA support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Drakon">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <!-- ===== Dragon picker ===== -->
+  <section class="picker" id="picker">
+    <header class="picker-header">
+      <h1>Your dragon crew</h1>
+      <p>Pick a dragon to get started.</p>
+    </header>
+    <div class="picker-grid" id="picker-grid"><!-- cards injected by app.js --></div>
+  </section>
+
+  <!-- ===== Chat ===== -->
+  <section class="chat" id="chat" hidden>
+    <header class="chat-header">
+      <button class="back-btn" id="back-btn" aria-label="Back">‹</button>
+      <img class="chat-avatar" id="chat-avatar" alt="">
+      <div class="chat-id">
+        <div class="chat-name" id="chat-name"></div>
+        <div class="chat-role" id="chat-role"></div>
+      </div>
+    </header>
+
+    <div class="messages" id="messages"></div>
+
+    <form class="composer" id="composer">
+      <textarea class="composer-input" id="composer-input" rows="1"
+        placeholder="Message your dragon…" autocomplete="off"></textarea>
+      <button class="send-btn" id="send-btn" type="submit" aria-label="Send">➤</button>
+    </form>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>

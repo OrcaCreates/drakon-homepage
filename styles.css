@@ -11,13 +11,18 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Anchored sections stop below the fixed nav when scrolled to. */
+section[id] {
+  scroll-margin-top: calc(70px + env(safe-area-inset-top, 0px));
+}
+
 body {
   min-height: 100vh;
   background-color: #1A1033;
   color: #FFFFFF;
   font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
-  /* Offset for the fixed 70px nav so content isn't hidden behind it */
-  padding-top: 70px;
+  /* Offset for the fixed nav (plus the top safe-area when installed) */
+  padding-top: calc(70px + env(safe-area-inset-top, 0px));
 }
 
 /* Keep browser autofill on the dark theme (override the white box/dark text). */
@@ -50,6 +55,9 @@ input:-webkit-autofill:active {
   background-color: #000000;
   overflow: hidden;
 }
+
+/* Desktop keeps the background-image overlay; the stacking <img> is mobile-only. */
+.hero-img { display: none; }
 
 /* Subtle gradient on the LEFT only, fading to transparent by center,
    so the text reads without darkening the dragon on the right. */
@@ -108,13 +116,82 @@ input:-webkit-autofill:active {
   top: 0;
   left: 0;
   width: 100%;
-  height: 70px;
+  /* Grow by the device's top safe-area (notch / status bar) when installed
+     as a standalone app; env() is 0 on desktop so nothing changes there. */
+  height: calc(70px + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
   z-index: 1000;
   background-color: rgba(10, 6, 24, 0.85);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(155, 111, 255, 0.15);
 }
+
+/* ---------- Hamburger (mobile only; hidden on desktop) ---------- */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  margin-left: auto; /* push to the far right on mobile */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+.nav-toggle span {
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+/* Animate into an X when open. */
+.nav-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle.open span:nth-child(2) { opacity: 0; }
+.nav-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ---------- Mobile menu panel (hidden on desktop) ---------- */
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  padding: 8px 20px calc(16px + env(safe-area-inset-bottom, 0px));
+  background-color: rgba(10, 6, 24, 0.97);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(155, 111, 255, 0.15);
+  /* collapsed by default; .open expands it */
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+.mobile-menu.open { max-height: 80vh; opacity: 1; }
+
+.mobile-link {
+  padding: 16px 4px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #FFFFFF;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.mobile-link:last-child { border-bottom: none; }
+.mobile-cta {
+  margin-top: 14px;
+  text-align: center;
+  background: #4A9EFF;
+  border-radius: 999px;
+  border-bottom: none;
+}
+.mobile-cta:active { background: #3A82D6; }
 
 .nav-inner {
   max-width: 1200px;
@@ -1029,28 +1106,54 @@ input:-webkit-autofill:active {
 }
 
 @media (max-width: 768px) {
-  /* Mobile: let the hero take its natural aspect-ratio height (no viewport
-     cap) — mobile users expect to scroll. The box matches the image ratio,
-     so contain fills it edge-to-edge with no letterboxing. */
+  /* Mobile hero: STACK image + text instead of overlaying.
+     Image on top, then the headline/subhead/button in a clean block on black,
+     so the words no longer run across the dragon. */
   .hero {
     height: auto;
     max-height: none;
-    aspect-ratio: 1672 / 941;
+    aspect-ratio: auto;
+    background-image: none; /* shown as <img> below instead */
+    display: flex;
+    flex-direction: column;
+  }
+  .hero::before { display: none; } /* no overlay gradient needed when stacked */
+  .hero-img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .hero-content {
+    position: static;
+    left: auto;
+    bottom: auto;
+    z-index: auto;
+    padding: 26px 22px 44px;
+  }
+  .hero-headline {
+    max-width: none;
+    text-shadow: none;
   }
 
   .nav-inner {
     padding: 0 20px;
   }
 
-  .hero-content {
-    left: 5%;
-    bottom: 8%;
+  /* Mobile nav: hide the desktop items, show the hamburger + menu panel. */
+  .nav-inner > .dropdown,
+  .nav-inner > .nav-link,
+  .nav-inner > .spacer,
+  .nav-inner > .btn-get-started {
+    display: none;
   }
+  .nav-toggle { display: flex; }
+  .mobile-menu { display: flex; } /* collapsed (max-height:0) until .open */
 
   /* clamp() already scales the headline down here (~2rem floor). */
 
   .hero-subhead {
     font-size: 16px;
+    max-width: none;
   }
 
   /* How it works: stack steps vertically, hide the connecting lines. */

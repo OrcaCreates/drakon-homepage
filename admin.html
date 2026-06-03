@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drakon — Admin</title>
+  <link rel="stylesheet" href="admin.css?v=3">
+
+  <!-- The admin is an internal tool — never let a service worker cache it.
+       Unregister any SW controlling this page so assets always load fresh. -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function (regs) {
+        regs.forEach(function (r) { r.unregister(); });
+      }).catch(function () {});
+    }
+  </script>
+</head>
+<body>
+  <!-- ===== Login screen ===== -->
+  <div class="login-screen" id="login-screen">
+    <form class="login-box" id="login-form">
+      <div class="login-logo">DrakonCrew</div>
+      <p class="login-sub">Admin access</p>
+      <input class="login-input" id="login-username" type="text" placeholder="Username" autocomplete="username" required>
+      <input class="login-input" id="login-password" type="password" placeholder="Password" autocomplete="current-password" required>
+      <button class="login-btn" type="submit">Log in</button>
+      <p class="login-error" id="login-error" hidden>Invalid username or password.</p>
+    </form>
+  </div>
+
+  <!-- ===== Dashboard (hidden until logged in) ===== -->
+  <div class="dashboard" id="dashboard" hidden>
+    <header class="dash-header">
+      <div class="dash-logo">DrakonCrew <span>Admin</span></div>
+      <div class="dash-header-right">
+        <span class="dash-mode" id="dash-mode">Loading…</span>
+        <button class="dash-logout" id="logout-btn" type="button">Log out</button>
+      </div>
+    </header>
+
+    <!-- Stat cards -->
+    <section class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-visitors">—</div>
+        <div class="stat-label">Total visitors</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-live">—</div>
+        <div class="stat-label">Live now</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-signups">—</div>
+        <div class="stat-label">Waitlist signups</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-countries">—</div>
+        <div class="stat-label">Countries</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-avgtime">—</div>
+        <div class="stat-label">Avg. time on page</div>
+      </div>
+    </section>
+
+    <!-- Globe + live feed -->
+    <section class="globe-row">
+      <div class="globe-panel">
+        <div class="panel-title">Live visitor map</div>
+        <div id="globe"></div>
+      </div>
+      <div class="feed-panel">
+        <div class="panel-title">Live feed</div>
+        <ul class="feed-list" id="feed-list"></ul>
+      </div>
+    </section>
+
+    <!-- Signups + referrers -->
+    <section class="table-row">
+      <div class="table-panel">
+        <div class="panel-title">Waitlist signups</div>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr><th>Name</th><th>Email</th><th>Joined</th></tr></thead>
+            <tbody id="signups-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="table-panel">
+        <div class="panel-title">Top referrers</div>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr><th>Source</th><th>Visits</th></tr></thead>
+            <tbody id="referrers-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Get the app (QR code) -->
+    <section class="qr-row">
+      <div class="qr-panel">
+        <div class="panel-title">Get the app</div>
+        <p class="qr-hint">Set the URL below to your live DrakonCrew address (or this computer's network address for testing), then scan with a phone camera to open it.</p>
+        <div class="qr-canvas-wrap"><div id="qr-canvas"></div></div>
+        <a class="qr-link" id="qr-link" target="_blank" rel="noopener">link</a>
+        <input class="qr-url" id="qr-url" type="text" spellcheck="false" placeholder="https://your-site.com/app.html">
+        <div class="qr-actions">
+          <button class="qr-btn" id="qr-update" type="button">Update</button>
+          <button class="qr-btn" id="qr-copy" type="button">Copy link</button>
+          <button class="qr-btn qr-btn-primary" id="qr-download" type="button">Download PNG</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- QR code generator (davidshimjs/qrcodejs) — vendored locally, no CDN -->
+  <script src="vendor/qrcode.min.js?v=3"></script>
+  <!-- globe.gl (three.js based) from CDN -->
+  <script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/globe.gl@2.32.0/dist/globe.gl.min.js"></script>
+  <script src="admin.js?v=3"></script>
+</body>
+</html>

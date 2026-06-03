@@ -1,0 +1,10 @@
+{
+  "name": "drakon-homepage",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Drakon — AI dragon crew for first-time ecommerce sellers (site + PWA + Netlify functions)",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.70.0",
+    "@netlify/blobs": "^8.1.0"
+  }
+}

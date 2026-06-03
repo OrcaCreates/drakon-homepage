@@ -1,5 +1,14 @@
 console.log("Drakon loaded.");
 
+// Register the service worker so the homepage is installable as a PWA.
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js").catch(function (e) {
+      console.warn("Service worker registration failed:", e.message);
+    });
+  });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const dropdown = document.getElementById("dragons-dropdown");
   const toggle = document.getElementById("dragons-toggle");
@@ -24,6 +33,40 @@ document.addEventListener("DOMContentLoaded", function () {
         toggle.setAttribute("aria-expanded", "false");
       }
     });
+  }
+
+  // Mobile hamburger menu.
+  const navToggle = document.getElementById("nav-toggle");
+  const mobileMenu = document.getElementById("mobile-menu");
+  if (navToggle && mobileMenu) {
+    function setMenu(open) {
+      mobileMenu.classList.toggle("open", open);
+      navToggle.classList.toggle("open", open);
+      navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+    navToggle.addEventListener("click", function (e) {
+      e.stopPropagation();
+      setMenu(!mobileMenu.classList.contains("open"));
+    });
+    // Tapping a link closes the menu.
+    mobileMenu.querySelectorAll("a").forEach(function (a) {
+      a.addEventListener("click", function () { setMenu(false); });
+    });
+    // Tapping outside closes it.
+    document.addEventListener("click", function (e) {
+      if (mobileMenu.classList.contains("open") &&
+          !mobileMenu.contains(e.target) && !navToggle.contains(e.target)) {
+        setMenu(false);
+      }
+    });
+    // Mobile "Login" placeholder.
+    const mobileLogin = document.getElementById("mobile-login");
+    if (mobileLogin) {
+      mobileLogin.addEventListener("click", function (e) {
+        e.preventDefault();
+        alert("Login coming soon");
+      });
+    }
   }
 
   // Login placeholder.

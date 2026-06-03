@@ -4,7 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Drakon — Your AI dragon crew</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=2">
+
+  <!-- PWA: makes the homepage installable ("Add to Home Screen") -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1A1033">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Drakon">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 </head>
 <body>
   <!-- Sticky top navigation -->
@@ -78,11 +86,28 @@
 
       <!-- Get Started button -->
       <a href="#waitlist" class="btn-get-started">Get Started</a>
+
+      <!-- Hamburger (mobile only) -->
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <!-- Mobile menu (shown only on small screens) -->
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="#dragons" class="mobile-link">Dragons</a>
+      <a href="#pricing" class="mobile-link">Pricing</a>
+      <a href="#about" class="mobile-link">About Drakon</a>
+      <a href="#" class="mobile-link" id="mobile-login">Login</a>
+      <a href="#waitlist" class="mobile-link mobile-cta">Get Started</a>
     </div>
   </nav>
 
   <!-- Hero -->
   <section class="hero" id="top">
+    <!-- Stacking image: hidden on desktop (which uses the background image),
+         shown on mobile so text sits below it instead of across it. -->
+    <img class="hero-img" src="images/HomepageBG.png" alt="">
     <div class="hero-content">
       <h1 class="hero-headline">Starting an online store? Let the dragons help.</h1>
       <p class="hero-subhead">Six AI dragons built for first-time sellers. Marketing, store setup, content, support — each one handles a different part. So you don't have to do it all alone.</p>
@@ -336,6 +361,22 @@
     <p class="footer-copyright">© 2026 Drakon. Built with care in Texas.</p>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=2"></script>
+
+  <!-- Visitor tracking beacon for the admin dashboard. Records one visit
+       (with referrer); Netlify adds the visitor's geo server-side. No-ops if
+       the function isn't deployed. -->
+  <script>
+    (function () {
+      try {
+        fetch("/.netlify/functions/track", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path: location.pathname, referrer: document.referrer }),
+          keepalive: true,
+        }).catch(function () {});
+      } catch (e) {}
+    })();
+  </script>
 </body>
 </html>
