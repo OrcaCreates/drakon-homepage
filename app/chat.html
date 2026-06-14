@@ -59,8 +59,8 @@
     const input = document.getElementById("composer-input");
     const sendBtn = document.getElementById("send-btn");
     const composer = document.getElementById("composer");
-    const history = [];
     let sending = false;
+    let userId = null; // set from the Supabase session on load
 
     function bubble(cls, text) {
       const el = document.createElement("div");
@@ -78,7 +78,6 @@
       const text = input.value.trim();
       if (!text) return;
       bubble("user", text);
-      history.push({ role: "user", content: text });
       input.value = "";
       input.style.height = "auto";
 
@@ -87,18 +86,18 @@
       const typing = bubble("dragon typing", dragon.name + " is thinking…");
 
       try {
-        // Calls the Drakon chat function if it's deployed on this domain.
+        // The dragon's memory lives in the Supabase profile, so we send just the
+        // latest message + the logged-in user's id (not the chat history).
         const res = await fetch("/.netlify/functions/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ dragon: key || "vexa", messages: history }),
+          body: JSON.stringify({ message: text, dragon: key || "vexa", userId: userId }),
         });
         if (!res.ok) throw new Error("no backend");
         const data = await res.json();
         typing.remove();
         const reply = data.reply || "(no reply)";
         bubble("dragon", reply);
-        history.push({ role: "assistant", content: reply });
       } catch (err) {
         typing.remove();
         bubble("dragon", "(Demo) The AI backend isn't connected to this app yet, so I can't reply for real — but the chat UI works! Once the chat function is wired up, " + dragon.name + " will respond here.");
@@ -118,8 +117,10 @@
       input.style.height = Math.min(input.scrollHeight, 140) + "px";
     });
 
-    // Gate the page: redirect to login if not signed in.
-    DrakonAuth.requireAuth();
+    // Gate the page: redirect to login if not signed in, and grab the user id.
+    DrakonAuth.requireAuth().then(function (session) {
+      if (session && session.user) userId = session.user.id;
+    });
   </script>
 </body>
 </html>

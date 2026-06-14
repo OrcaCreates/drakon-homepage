@@ -1,66 +1,133 @@
-/* Drakon chat backend.
+/* Drakon dragon chat.
  *
- * Each of the six dragons is the same Claude model (claude-opus-4-8) driven by
- * a different system prompt / persona. The client POSTs { dragon, messages };
- * we look up the persona, prepend it as the system prompt, and return Claude's
- * reply. The API key lives in the ANTHROPIC_API_KEY env var (server-side only).
+ * POST { message, dragon, userId }
+ *   -> reads the seller's profile from Supabase (user_profiles)
+ *   -> runs the chosen dragon's persona on claude-sonnet-4-6
+ *   -> saves anything new it learned back to the profile
+ *   -> returns { reply, saved: [fields] }
  *
- * Env var required (Netlify → Site settings → Environment variables):
- *   ANTHROPIC_API_KEY
+ * Env vars required (Netlify → Site settings → Environment variables):
+ *   ANTHROPIC_API_KEY     - Claude API key
+ *   SUPABASE_SERVICE_KEY  - Supabase service_role key (secret; bypasses RLS so
+ *                           the function can read/write any user's profile row)
  */
 const Anthropic = require("@anthropic-ai/sdk");
 
+const SUPABASE_URL = "https://dvbkjzmhdsxswbarowbd.supabase.co";
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
+
 const client = new Anthropic(); // reads ANTHROPIC_API_KEY from the environment
 
-// Shared guidance prepended to every dragon — keeps the crew on-brand and
-// tuned for first-time sellers.
-const SHARED = `You are one of the six dragons of Drakon — an AI crew built for FIRST-TIME online sellers who often feel overwhelmed and don't know where to start.
+// Fields a dragon is allowed to write to the profile.
+const ALLOWED_FIELDS = [
+  "business_model", "niche", "budget", "time_availability", "interests",
+  "products", "store_style", "ad_copy", "social_plan", "notes",
+];
 
-Always:
-- Explain things in plain language. Assume the seller is new. No unexplained jargon.
-- Be concrete and practical. Give them something they can use or act on right now.
-- Be warm, encouraging, and concise. You're a helpful teammate, not a textbook.
-- When useful, end with one short suggested next step.
-Never pretend to take actions you can't actually perform (you can't publish to their store or send real emails). Produce the content/plan and tell them how to use it.`;
+const SHARED =
+  "You are one of the six AI dragons in Drakon — an app that guides FIRST-TIME " +
+  "ecommerce sellers from idea to a running store. Speak in plain, encouraging " +
+  "language for a total beginner. Be concise and practical. Never claim you've " +
+  "taken real actions you can't take (you can't publish a store or send real " +
+  "emails) — produce the content/plan and explain how to use it. Stay in your lane.";
 
 const DRAGONS = {
-  vexa: {
-    name: "Vexa",
-    system: `${SHARED}
-
-You are Vexa. You write ads. You generate scroll-stopping ad copy for Meta, TikTok, and Google — headlines, hooks, primary text, and full ad variations. When the seller gives you a product, produce a few distinct angles (e.g. benefit-led, problem/solution, social-proof) and label them. Ask for the product and target customer only if they haven't said.`,
-  },
-  aurora: {
-    name: "Aurora",
-    system: `${SHARED}
-
-You are Aurora. You make social content. You produce daily-ready posts for TikTok, Instagram, and X — captions, hooks, and post ideas tuned to the seller's brand and voice. Offer a few options, keep hooks punchy, and suggest relevant hashtags sparingly. Ask what they sell and their vibe if it's unclear.`,
-  },
-  terra: {
-    name: "Terra",
-    system: `${SHARED}
-
-You are Terra. You build stores. You write product descriptions, category copy, and store/landing pages that convert — clear, benefit-driven, and skimmable. Structure output with headings/bullets where it helps. Ask for the product details (what it is, who it's for, key features) if missing.`,
-  },
-  lyric: {
-    name: "Lyric",
-    system: `${SHARED}
-
-You are Lyric. You handle customers. You draft friendly, on-brand replies to emails, DMs, and support tickets — refunds, shipping questions, complaints, pre-sale questions. Keep replies kind, clear, and never robotic. If the seller pastes a customer message, draft the reply; ask for tone or policy details only if needed.`,
+  vael: {
+    name: "Vael",
+    persona:
+      "You are Vael: a serious, strategic mentor — calm, direct, big-picture. " +
+      "Your job: help the seller choose a business MODEL (dropshipping, print on " +
+      "demand, or another ecommerce model) and a NICHE. Ask about their budget, " +
+      "available time, and interests, then give a clear recommendation. When they " +
+      "decide, lock in business_model and niche (and capture budget, " +
+      "time_availability, interests).",
   },
   cryo: {
     name: "Cryo",
-    system: `${SHARED}
-
-You are Cryo. You track what's working. The seller pastes in sales numbers, ad metrics, or product performance, and you give clear, jargon-free insights: what to scale, what to cut, and why. Call out the one or two things that matter most. If they haven't shared data yet, tell them exactly what to paste in.`,
+    persona:
+      "You are Cryo: energetic and data-obsessed — you LOVE trends and numbers. " +
+      "Your job: based on the seller's niche, suggest about 10 strong product ideas, " +
+      "each with a quick reason (demand, trend, or margin). Get excited. If you don't " +
+      "know their niche yet, ask for it. Capture the product list in `products`.",
   },
-  vael: {
-    name: "Vael",
-    system: `${SHARED}
-
-You are Vael. You plan the next move. You give strategy tailored to the seller's store — what to launch, when to push, where to focus next. Think a step ahead, prioritize ruthlessly for someone with limited time and money, and give a clear recommended plan rather than a list of everything possible.`,
+  terra: {
+    name: "Terra",
+    persona:
+      "You are Terra: warm and creative. Your job: using the seller's niche and " +
+      "products, give specific Shopify store customization advice — theme vibe, " +
+      "colors, fonts, layout, homepage sections — tailored to their style. Capture " +
+      "the direction you land on in `store_style`.",
+  },
+  vexa: {
+    name: "Vexa",
+    persona:
+      "You are Vexa: a confident, bold marketer. Your job: using the seller's store " +
+      "style and products, write scroll-stopping ad copy (hooks, headlines, primary " +
+      "text) for platforms like Meta and TikTok. Capture the copy in `ad_copy`.",
+  },
+  aurora: {
+    name: "Aurora",
+    persona:
+      "You are Aurora: bubbly and obsessed with social media. Your job: using the " +
+      "seller's ads, help them post and grow on Facebook, TikTok, and Instagram — " +
+      "captions, hooks, posting cadence, hashtags. Capture the plan in `social_plan`.",
+  },
+  lyric: {
+    name: "Lyric",
+    persona:
+      "You are Lyric: friendly and deeply empathetic. Your job: using everything " +
+      "known about the seller and their store, write warm, professional customer " +
+      "email/message responses. Capture anything useful in `notes`.",
   },
 };
+
+/* ---------- Supabase REST helpers (never fatal to the chat) ---------- */
+async function readProfile(userId) {
+  if (!userId) return {};
+  try {
+    const url =
+      `${SUPABASE_URL}/rest/v1/user_profiles?user_id=eq.${encodeURIComponent(userId)}&select=*`;
+    const res = await fetch(url, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    if (!res.ok) return {};
+    const rows = await res.json();
+    return Array.isArray(rows) && rows[0] ? rows[0] : {};
+  } catch (_) {
+    return {};
+  }
+}
+
+async function saveProfile(userId, updates) {
+  if (!userId || !updates || Object.keys(updates).length === 0) return [];
+  try {
+    const row = { user_id: userId, ...updates, updated_at: new Date().toISOString() };
+    const url = `${SUPABASE_URL}/rest/v1/user_profiles?on_conflict=user_id`;
+    await fetch(url, {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "resolution=merge-duplicates,return=minimal",
+      },
+      body: JSON.stringify([row]),
+    });
+    return Object.keys(updates);
+  } catch (_) {
+    return [];
+  }
+}
+
+/* Pull a JSON object out of the model's text, tolerating stray prose/fences. */
+function parseModelJSON(text) {
+  let t = (text || "").trim();
+  if (t.startsWith("```")) t = t.replace(/^```(json)?/i, "").replace(/```\s*$/, "").trim();
+  const a = t.indexOf("{");
+  const b = t.lastIndexOf("}");
+  if (a !== -1 && b !== -1 && b > a) t = t.slice(a, b + 1);
+  try { return JSON.parse(t); } catch (_) { return null; }
+}
 
 exports.handler = async function (event) {
   if (event.httpMethod !== "POST") {
@@ -68,35 +135,70 @@ exports.handler = async function (event) {
   }
 
   try {
-    const { dragon, messages } = JSON.parse(event.body || "{}");
+    const { message, dragon, userId } = JSON.parse(event.body || "{}");
 
     const persona = DRAGONS[dragon];
-    if (!persona) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Unknown dragon" }) };
-    }
-    if (!Array.isArray(messages) || messages.length === 0) {
-      return { statusCode: 400, body: JSON.stringify({ error: "No messages" }) };
-    }
+    if (!persona) return { statusCode: 400, body: JSON.stringify({ error: "Unknown dragon" }) };
+    if (!message) return { statusCode: 400, body: JSON.stringify({ error: "No message" }) };
 
+    // 1) Read what we already know about this seller.
+    const profile = await readProfile(userId);
+
+    // 2) Ask the dragon. Stable persona first (cacheable), volatile profile after.
     const response = await client.messages.create({
-      model: "claude-opus-4-8",
-      max_tokens: 1024,
-      // Adaptive thinking: Claude decides how much to reason per task.
-      thinking: { type: "adaptive" },
-      // cache_control marks the persona as cacheable. Note: on Opus the minimum
-      // cacheable prefix is ~4096 tokens, so these short personas won't actually
-      // cache yet — it engages automatically once the system prompt grows.
-      system: [{ type: "text", text: persona.system, cache_control: { type: "ephemeral" } }],
-      messages: messages,
+      model: "claude-sonnet-4-6",
+      max_tokens: 1500,
+      system: [
+        {
+          type: "text",
+          text: `${SHARED}\n\n${persona.persona}`,
+          cache_control: { type: "ephemeral" },
+        },
+        {
+          type: "text",
+          text:
+            `What we already know about this seller (saved profile):\n` +
+            `${JSON.stringify(profile)}\n\n` +
+            `Use this context. Reply to the seller's latest message in your personality.\n\n` +
+            `Then capture anything NEW or CHANGED you learned this turn.\n\n` +
+            `Return ONLY a single JSON object (no markdown, no extra text), exactly:\n` +
+            `{"reply": "<your message to the seller>", "profile_updates": { ...only new/changed fields... }}\n\n` +
+            `Valid profile_updates keys: ${ALLOWED_FIELDS.join(", ")}. ` +
+            `Use string values. Use {} for profile_updates if you learned nothing new.`,
+        },
+      ],
+      messages: [{ role: "user", content: message }],
     });
 
-    // Skip thinking blocks; return only the visible text.
-    const reply = response.content
+    const raw = response.content
       .filter((b) => b.type === "text")
       .map((b) => b.text)
       .join("");
 
-    return { statusCode: 200, body: JSON.stringify({ reply }) };
+    // 3) Parse reply + updates (defensively).
+    const parsed = parseModelJSON(raw);
+    let reply;
+    let updates = {};
+    if (parsed && typeof parsed.reply === "string") {
+      reply = parsed.reply;
+      if (parsed.profile_updates && typeof parsed.profile_updates === "object") {
+        updates = parsed.profile_updates;
+      }
+    } else {
+      reply = raw; // model didn't return JSON — still show the seller something
+    }
+
+    // Keep only allowed, non-empty fields.
+    const clean = {};
+    for (const k of ALLOWED_FIELDS) {
+      const v = updates[k];
+      if (v != null && String(v).trim() !== "") clean[k] = v;
+    }
+
+    // 4) Save what the dragon learned.
+    const saved = await saveProfile(userId, clean);
+
+    return { statusCode: 200, body: JSON.stringify({ reply, saved }) };
   } catch (err) {
     return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
   }
