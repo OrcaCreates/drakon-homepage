@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Drakon — Your crew</title>
+  <meta name="theme-color" content="#1A1033">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <img src="images/Drakonlogo.png" alt="Drakon">
+      <span>Drakon</span>
+    </div>
+    <button class="logout-btn" id="logout-btn" type="button">Log out</button>
+  </header>
+
+  <section class="dash-intro">
+    <h1>Your dragon crew</h1>
+    <p>Pick a dragon to get started.</p>
+  </section>
+
+  <div class="dragon-grid" id="dragon-grid"><!-- cards injected by script --></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="auth.js"></script>
+  <script>
+    // Order requested: Vael, Cryo, Terra, Vexa, Aurora, Lyric
+    const DRAGONS = [
+      { key: "vael",   name: "Vael",   role: "Plans your next move",    color: "#7E57C2", img: "images/Vaelhead.png" },
+      { key: "cryo",   name: "Cryo",   role: "Tracks what's working",   color: "#90CAF9", img: "images/Cryohead.png" },
+      { key: "terra",  name: "Terra",  role: "Builds your store",       color: "#7CB342", img: "images/Terrahead.png" },
+      { key: "vexa",   name: "Vexa",   role: "Writes your ads",         color: "#FF4D2E", img: "images/Vexahead.png" },
+      { key: "aurora", name: "Aurora", role: "Makes your social posts", color: "#E91E63", img: "images/Aurorahead.png" },
+      { key: "lyric",  name: "Lyric",  role: "Handles your customers",  color: "#26C6DA", img: "images/Lyrichead.png" },
+    ];
+
+    const grid = document.getElementById("dragon-grid");
+    DRAGONS.forEach(function (d) {
+      const a = document.createElement("a");
+      a.className = "dragon-card";
+      a.href = "chat.html?dragon=" + d.key;
+      a.style.borderColor = d.color;
+      a.innerHTML =
+        '<img src="' + d.img + '" alt="' + d.name + '">' +
+        '<span class="d-name">' + d.name + "</span>" +
+        '<span class="d-role">' + d.role + "</span>";
+      grid.appendChild(a);
+    });
+
+    document.getElementById("logout-btn").addEventListener("click", function () {
+      DrakonAuth.logout();
+    });
+
+    // Gate the page: redirect to login if not signed in.
+    DrakonAuth.requireAuth();
+  </script>
+</body>
+</html>

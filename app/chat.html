@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Drakon — Chat</title>
+  <meta name="theme-color" content="#1A1033">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="chat-page">
+    <div class="chat-top">
+      <a class="chat-back" href="dashboard.html" aria-label="Back">‹</a>
+      <img id="chat-avatar" alt="">
+      <div>
+        <div class="c-name" id="chat-name"></div>
+        <div class="c-role" id="chat-role"></div>
+      </div>
+    </div>
+
+    <div class="messages" id="messages"></div>
+
+    <form class="composer" id="composer">
+      <textarea id="composer-input" rows="1" placeholder="Message your dragon…" autocomplete="off"></textarea>
+      <button class="send-btn" id="send-btn" type="submit" aria-label="Send">➤</button>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="auth.js"></script>
+  <script>
+    const DRAGONS = {
+      vael:   { name: "Vael",   role: "Plans your next move",    color: "#7E57C2", img: "images/Vaelhead.png",
+                greeting: "I'm Vael. Tell me where your store's at and I'll map out your smartest next move." },
+      cryo:   { name: "Cryo",   role: "Tracks what's working",   color: "#90CAF9", img: "images/Cryohead.png",
+                greeting: "I'm Cryo. Paste your sales or ad numbers and I'll tell you what to scale and what to cut." },
+      terra:  { name: "Terra",  role: "Builds your store",       color: "#7CB342", img: "images/Terrahead.png",
+                greeting: "I'm Terra. Give me a product and I'll write store pages that convert." },
+      vexa:   { name: "Vexa",   role: "Writes your ads",         color: "#FF4D2E", img: "images/Vexahead.png",
+                greeting: "Hey, I'm Vexa. Tell me what you're selling and I'll write ads that stop the scroll." },
+      aurora: { name: "Aurora", role: "Makes your social posts", color: "#E91E63", img: "images/Aurorahead.png",
+                greeting: "Hi! I'm Aurora. What are we posting about today?" },
+      lyric:  { name: "Lyric",  role: "Handles your customers",  color: "#26C6DA", img: "images/Lyrichead.png",
+                greeting: "Hey, I'm Lyric. Paste a customer message and I'll draft a friendly reply." },
+    };
+
+    const params = new URLSearchParams(location.search);
+    const key = params.get("dragon");
+    const dragon = DRAGONS[key] || DRAGONS.vexa;
+
+    document.getElementById("chat-avatar").src = dragon.img;
+    document.getElementById("chat-avatar").alt = dragon.name;
+    document.getElementById("chat-avatar").style.borderColor = dragon.color;
+    document.getElementById("chat-name").textContent = dragon.name;
+    document.getElementById("chat-role").textContent = dragon.role;
+    document.title = "Drakon — " + dragon.name;
+
+    const messagesEl = document.getElementById("messages");
+    const input = document.getElementById("composer-input");
+    const sendBtn = document.getElementById("send-btn");
+    const composer = document.getElementById("composer");
+    const history = [];
+    let sending = false;
+
+    function bubble(cls, text) {
+      const el = document.createElement("div");
+      el.className = "bubble " + cls;
+      el.textContent = text;
+      messagesEl.appendChild(el);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      return el;
+    }
+
+    bubble("dragon", dragon.greeting);
+
+    async function send() {
+      if (sending) return;
+      const text = input.value.trim();
+      if (!text) return;
+      bubble("user", text);
+      history.push({ role: "user", content: text });
+      input.value = "";
+      input.style.height = "auto";
+
+      sending = true;
+      sendBtn.disabled = true;
+      const typing = bubble("dragon typing", dragon.name + " is thinking…");
+
+      try {
+        // Calls the Drakon chat function if it's deployed on this domain.
+        const res = await fetch("/.netlify/functions/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dragon: key || "vexa", messages: history }),
+        });
+        if (!res.ok) throw new Error("no backend");
+        const data = await res.json();
+        typing.remove();
+        const reply = data.reply || "(no reply)";
+        bubble("dragon", reply);
+        history.push({ role: "assistant", content: reply });
+      } catch (err) {
+        typing.remove();
+        bubble("dragon", "(Demo) The AI backend isn't connected to this app yet, so I can't reply for real — but the chat UI works! Once the chat function is wired up, " + dragon.name + " will respond here.");
+      } finally {
+        sending = false;
+        sendBtn.disabled = false;
+        input.focus();
+      }
+    }
+
+    composer.addEventListener("submit", function (e) { e.preventDefault(); send(); });
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+    });
+    input.addEventListener("input", function () {
+      input.style.height = "auto";
+      input.style.height = Math.min(input.scrollHeight, 140) + "px";
+    });
+
+    // Gate the page: redirect to login if not signed in.
+    DrakonAuth.requireAuth();
+  </script>
+</body>
+</html>

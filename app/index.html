@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Drakon — Log in</title>
+  <meta name="theme-color" content="#1A1033">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="auth-screen">
+    <form class="auth-card" id="auth-form">
+      <img class="auth-logo" src="images/Drakonlogo.png" alt="Drakon">
+      <h1 class="auth-title">Welcome to Drakon</h1>
+      <p class="auth-sub">Log in or create your account.</p>
+
+      <div class="field">
+        <input id="email" type="email" placeholder="Email" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <input id="password" type="password" placeholder="Password" autocomplete="current-password" required>
+      </div>
+
+      <label class="remember">
+        <input id="remember" type="checkbox"> Remember me
+      </label>
+
+      <button class="btn btn-primary" id="login-btn" type="submit">Log in</button>
+      <button class="btn btn-secondary" id="signup-btn" type="button">Sign up</button>
+
+      <p class="auth-msg" id="auth-msg"></p>
+    </form>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="auth.js"></script>
+</body>
+</html>
