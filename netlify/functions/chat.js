@@ -135,11 +135,23 @@ exports.handler = async function (event) {
   }
 
   try {
-    const { message, dragon, userId } = JSON.parse(event.body || "{}");
+    const { messages, message, dragon, userId } = JSON.parse(event.body || "{}");
 
     const persona = DRAGONS[dragon];
     if (!persona) return { statusCode: 400, body: JSON.stringify({ error: "Unknown dragon" }) };
-    if (!message) return { statusCode: 400, body: JSON.stringify({ error: "No message" }) };
+
+    // Accept a full conversation (messages[]) or a single message (back-compat),
+    // then normalize to the {role, content} shape the API expects.
+    let convo = Array.isArray(messages) && messages.length
+      ? messages
+      : (message ? [{ role: "user", content: message }] : []);
+    convo = convo
+      .filter((m) => m && m.content != null && String(m.content).trim() !== "")
+      .map((m) => ({
+        role: m.role === "assistant" ? "assistant" : "user",
+        content: String(m.content),
+      }));
+    if (!convo.length) return { statusCode: 400, body: JSON.stringify({ error: "No messages" }) };
 
     // 1) Read what we already know about this seller.
     const profile = await readProfile(userId);
@@ -167,7 +179,7 @@ exports.handler = async function (event) {
             `Use string values. Use {} for profile_updates if you learned nothing new.`,
         },
       ],
-      messages: [{ role: "user", content: message }],
+      messages: convo,
     });
 
     const raw = response.content
